@@ -392,7 +392,7 @@ client.on('interactionCreate', async interaction => {
           .setDescription(
             `<@${proposedBy}> a déclaré <@${winnerId}> vainqueur.\n\n` +
             `<@${opponentId}> : clique sur **✅ Valider un vainqueur** pour confirmer.\n\n` +
-            `En cas de désaccord, un <@&${MODO_ROLE_ID}> sera appelé automatiquement.`
+            `En cas de désaccord, mentionnez un <@&${MODO_ROLE_ID}> pour résoudre le litige.`
           )
           .setColor('#e67e22')]
       });
