@@ -53,7 +53,7 @@ function buildInscriptionEmbed() {
     .setTitle('🎮 RocKyy Event - Inscription')
     .setDescription(
       "Clique sur le bouton ci-dessous pour t'inscrire à l'événement.\n\n" +
-      "Tu recevras le rôle **RocKyy Event** et accèderas au salon **#trouve-ton-match**."
+      "Tu recevras le rôle **RocKyy Event** et accèderas au salon https://discord.com/channels/1019184268070633503/1519014283961307317"
     )
     .setColor('#7289DA');
 }
@@ -250,7 +250,7 @@ client.on('interactionCreate', async interaction => {
       return interaction.reply({
         embeds: [new EmbedBuilder()
           .setTitle('🎉 Inscription validée !')
-          .setDescription(`Tu as reçu le rôle **${ROLE_NAME}** et accès au salon **#trouve-ton-match**.`)
+          .setDescription(`Tu as reçu le rôle **${ROLE_NAME}** et accès au salon https://discord.com/channels/1019184268070633503/1519014283961307317`)
           .setColor('#2ecc71')],
         ephemeral: true,
       });
