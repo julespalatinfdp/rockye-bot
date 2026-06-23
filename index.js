@@ -50,7 +50,7 @@ function getOrCreateRole(guild) {
 
 function buildInscriptionEmbed() {
   return new EmbedBuilder()
-    .setTitle('🎮 RocKyy Event — Inscription')
+    .setTitle('🎮 RocKyy Event - Inscription')
     .setDescription(
       "Clique sur le bouton ci-dessous pour t'inscrire à l'événement.\n\n" +
       "Tu recevras le rôle **RocKyy Event** et accèderas au salon **#trouve-ton-match**."
@@ -86,7 +86,7 @@ function buildClassementEmbed(guild) {
   const medals = ['🥇', '🥈', '🥉'];
   const lines = sorted.map(([userId, data], i) => {
     const prefix = medals[i] || `**${i + 1}.**`;
-    return `${prefix} <@${userId}> — **${data.points} pts** (${data.wins}V / ${data.losses}D)`;
+    return `${prefix} <@${userId}> - **${data.points} pts** (${data.wins}V / ${data.losses}D)`;
   });
 
   return new EmbedBuilder()
@@ -373,7 +373,7 @@ client.on('interactionCreate', async interaction => {
           .setTitle('⚠️ Résultat en attente de confirmation')
           .setDescription(
             `<@${proposedBy}> a déclaré <@${winnerId}> vainqueur.\n\n` +
-            `<@${opponentId}> — clique sur **✅ Valider un vainqueur** pour confirmer.\n\n` +
+            `<@${opponentId}> : clique sur **✅ Valider un vainqueur** pour confirmer.\n\n` +
             `En cas de désaccord, un <@&${MODO_ROLE_ID}> sera appelé automatiquement.`
           )
           .setColor('#e67e22')]
