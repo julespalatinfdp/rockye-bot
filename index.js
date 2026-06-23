@@ -58,6 +58,16 @@ function buildInscriptionEmbed() {
     .setColor('#7289DA');
 }
 
+function buildMatchmakingEmbed() {
+  return new EmbedBuilder()
+    .setTitle('⚔️ Trouver un match')
+    .setDescription(
+      "Clique sur le bouton ci-dessous pour lancer une recherche de match.\n\n" +
+      "Le bot te mettra en relation avec un autre joueur inscrit et créera un canal privé entre vous."
+    )
+    .setColor('#e67e22');
+}
+
 function buildRulesEmbed(player1, player2) {
   return new EmbedBuilder()
     .setTitle('⚔️ Match trouvé !')
@@ -194,8 +204,28 @@ client.on('interactionCreate', async interaction => {
       return interaction.reply({ content: `✅ Résultat enregistré. Canal supprimé dans ${AUTO_DELETE_MS / 1000}s.`, ephemeral: true });
     }
 
-    // /chercher-match
-    if (interaction.commandName === 'chercher-match') {
+    // /post-chercher-match
+    if (interaction.commandName === 'post-chercher-match') {
+      if (!interaction.member.permissions.has(PermissionFlagsBits.Administrator)) {
+        return interaction.reply({ content: '❌ Réservé aux admins.', ephemeral: true });
+      }
+      const row = new ActionRowBuilder().addComponents(
+        new ButtonBuilder()
+          .setCustomId('chercher_match')
+          .setLabel('⚔️ Chercher un match')
+          .setStyle(ButtonStyle.Danger),
+      );
+      await interaction.channel.send({ embeds: [buildMatchmakingEmbed()], components: [row] });
+      return interaction.reply({ content: '✅ Message de recherche de match posté.', ephemeral: true });
+    }
+  }
+
+  // ── BOUTONS ──────────────────────────────
+  if (interaction.isButton()) {
+    const [action, channelId] = interaction.customId.split(':');
+
+    // Bouton chercher un match
+    if (action === 'chercher_match') {
       const userId = interaction.user.id;
       const guild  = interaction.guild;
       const member = interaction.member;
@@ -207,33 +237,21 @@ client.on('interactionCreate', async interaction => {
       if (queue.includes(userId)) {
         return interaction.reply({ content: '⏳ Tu es déjà dans la file d\'attente.', ephemeral: true });
       }
-      // Vérifier s'il n'est pas déjà dans un match actif
       const alreadyInMatch = Object.values(matchChannels).some(m => m.player1Id === userId || m.player2Id === userId);
       if (alreadyInMatch) {
         return interaction.reply({ content: '❌ Tu as déjà un match en cours.', ephemeral: true });
       }
 
-      if (queue.length === 0) {
+      if (queue.length === 0 || queue.findIndex(id => id !== userId) === -1) {
         queue.push(userId);
-        return interaction.reply({ content: '⏳ Tu es dans la file d\'attente. Un adversaire va être trouvé...', ephemeral: true });
+        return interaction.reply({ content: '⏳ Tu es dans la file d\'attente. Un adversaire va être trouvé dès qu\'un joueur se connecte...', ephemeral: true });
       }
 
-      // Trouver un adversaire dans la queue (pas soi-même)
       const opponentIdx = queue.findIndex(id => id !== userId);
-      if (opponentIdx === -1) {
-        queue.push(userId);
-        return interaction.reply({ content: '⏳ Tu es dans la file d\'attente. Un adversaire va être trouvé...', ephemeral: true });
-      }
-
       const opponentId = queue.splice(opponentIdx, 1)[0];
       await interaction.reply({ content: '✅ Adversaire trouvé ! Ton canal de match a été créé.', ephemeral: true });
       await createMatchChannel(guild, userId, opponentId);
     }
-  }
-
-  // ── BOUTONS ──────────────────────────────
-  if (interaction.isButton()) {
-    const [action, channelId] = interaction.customId.split(':');
 
     // Bouton inscription
     if (action === 'inscription') {
@@ -402,8 +420,9 @@ async function deployCommands() {
       .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     new SlashCommandBuilder()
-      .setName('chercher-match')
-      .setDescription('Lance une recherche de match'),
+      .setName('post-chercher-match')
+      .setDescription('Poste le message de recherche de match dans le canal')
+      .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
 
     new SlashCommandBuilder()
       .setName('classement')
